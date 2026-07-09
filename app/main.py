@@ -1,40 +1,19 @@
 from fastapi import FastAPI
-from app.api.health import router as health_router
-from app.config.config import get_settings
-from app.schemas.book import BookCreate, BookResponse
 
+from app.database import Base, engine
+from app.handlers.books import router as books_router
+from app.models.book import Book
 
-settings = get_settings()
+app = FastAPI()
 
-app = FastAPI(
-    title=settings.app_name,
-    version=settings.app_version,
-    debug=settings.debug,
-)
+Base.metadata.create_all(bind=engine)
 
-app.include_router(health_router)
-
+app.include_router(books_router)
 
 
 @app.get("/")
 def root():
-    return {
-        "message": f"{settings.app_name} is running",
-    }
-@app.post("/books", response_model=BookResponse)
-def create_book(book: BookCreate):
-    return {
-        "id": 1,
-        "title": book.title,
-        "author": book.author,
-        "year": book.year,
-    }
-
-
-
-
-
-
+    return {"message": "Hello World"}
 
 
 
